@@ -25,7 +25,7 @@ def main():
     """)
 
     if len(args) < 1:
-        print("ERR, use: remind remember [-t|--title] <title> [-v|--value] <value>")
+        print("ERR, use: remind remember [-t|--title] <title> [-v|--value|-sv|--stdinvalue] <value>")
         print("or: remind <title>")
         print("or: remind list [-t|--title|-d|--date]")
         exit(1)
