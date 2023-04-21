@@ -13,7 +13,7 @@ def main():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS reminder(
             id             INTEGER PRIMARY KEY AUTOINCREMENT,
-            title          TEXT NOT NULL,
+            title          TEXT NOT NULL UNIQUE,
             value          TEXT NOT NULL,
             creation_date  DATETIME NOT NULL
         )
@@ -24,11 +24,29 @@ def main():
             ON reminder(title)
     """)
 
+    if len(args) < 1:
+        print("ERR, use: remind remember [-t|--title] <title> [-v|--value] <value>")
+        print("or: remind <title>")
+        print("or: remind list [-t|--title|-d|--date]")
+        exit(1)
+
     _arg = args.pop(0)
     if _arg == 'list':
         exec_list(cur, args)
     elif _arg == 'remember':
         remember(con, cur, args)
+    else:
+        remind(con, args, _arg)
+
+def remind(con, _args, arg):
+    title = arg + " " + " ".join(_args)
+    result = con.execute("SELECT title, value, creation_date FROM reminder WHERE title = ?", (title.strip(),))
+    result_data = result.fetchall()
+    if result_data:
+        header = " ".join([result_data[0][0], "|    added on", result_data[0][2]])
+        print(header)
+        print("".ljust(len(header), '-'))
+        print(result_data[0][1])
 
 
 def remember(con, cur, argss):
@@ -39,11 +57,11 @@ def remember(con, cur, argss):
     t, v = None, None
 
     def take_title(args):
-        title = [s for s in takewhile(lambda x: x != '-v' and x != '--value', args)]
+        title = [s for s in takewhile(lambda x: x != '-v' and x != '--value' and x != '-sv' and x != '--stdinvalue', args)]
         return title, args[len(title):]
 
     def take_value(args):
-        value = [s for s in takewhile(lambda x: x != '-t' and x != '--title', args)]
+        value = [s for s in takewhile(lambda x: x != '-t' and x != '--title' and x != '-sv' and x != '--stdinvalue', args)]
         return value, args[len(value):]
 
     while (t is None or v is None) and len(argss) > 0:
@@ -51,8 +69,20 @@ def remember(con, cur, argss):
 
         if flag_0 == '-v' or flag_0 == '--value':
             v, argss = take_value(argss)
+            v = " ".join(v)
         elif flag_0 == '-t' or flag_0 == '--title':
             t, argss = take_title(argss)
+            t = " ".join(t)
+        elif flag_0 == '-sv' or flag_0 == '--stdinvalue':
+            try:
+                value = ""
+                while True:
+                    value += input()
+                    value += '\n'
+            except (EOFError, KeyboardInterrupt) as _:
+                v = value
+                print(v)
+                continue
         else:
             print("ERR: Unrecognized flag " + flag_0)
             exit(1)
@@ -65,14 +95,13 @@ def remember(con, cur, argss):
         print("ERR: Value is missing")
         exit(1)
 
-    title, value = " ".join(t), " ".join(v)
-    print(title, value)
+    title, value = t, v
     cur.execute("""
         INSERT INTO reminder (title, value, creation_date)
         VALUES(?, ?, datetime('now'))
     """, (title, value,))
     con.commit()
-    print("Remembered: ", cur.lastrowid)
+    print("Remembered '" + title +"', ", cur.lastrowid)
 
 def exec_list(cur, args):
     order = ""
