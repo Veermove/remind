@@ -35,13 +35,34 @@ def main():
         exec_list(cur, args)
     elif _arg == 'remember':
         remember(con, cur, args)
+    elif _arg == 'forget':
+        forget(con, cur, args)
     else:
         remind(con, args, _arg)
 
-def remind(con, _args, arg):
-    title = arg + " " + " ".join(_args)
+def forget(con, cur, args):
+    title = " ".join(args)
+    result_data = fetch(con, title)
+    if not result_data:
+        print("ERR: Entry with title: ", title, "does not exist.")
+        exit(1)
+
+    print("Dropping", " ".join([result_data[0][0], "added on", result_data[0][2]]))
+    delete(con, title)
+
+
+def fetch(con, title):
     result = con.execute("SELECT title, value, creation_date FROM reminder WHERE title = ?", (title.strip(),))
-    result_data = result.fetchall()
+    return result.fetchall()
+
+def delete(con, title):
+    result = con.execute("DELETE FROM reminder WHERE title = ?", (title.strip(),))
+    # result.fetchall()
+    con.commit()
+
+
+def remind(con, _args, arg):
+    result_data = fetch(con, arg + " " + " ".join(_args))
     if result_data:
         header = " ".join([result_data[0][0], "|    added on", result_data[0][2]])
         print(header)
@@ -81,7 +102,6 @@ def remember(con, cur, argss):
                     value += '\n'
             except (EOFError, KeyboardInterrupt) as _:
                 v = value
-                print(v)
                 continue
         else:
             print("ERR: Unrecognized flag " + flag_0)
@@ -96,6 +116,13 @@ def remember(con, cur, argss):
         exit(1)
 
     title, value = t, v
+
+    result = con.execute("SELECT title, value, creation_date FROM reminder WHERE title = ?", (title,))
+    result_data = result.fetchall()
+    if result_data:
+        print("ERR: reminder with that title already exists.")
+        exit(1)
+
     cur.execute("""
         INSERT INTO reminder (title, value, creation_date)
         VALUES(?, ?, datetime('now'))
