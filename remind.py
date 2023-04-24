@@ -1,12 +1,13 @@
 #!/usr/bin/python3
-
+import os
 import sqlite3
 import sys
 from itertools import takewhile
 
 def main():
     args = sys.argv
-    con = sqlite3.connect("reminder.db")
+    db_path = str("/home/" + os.getlogin() + "/.reminder.db")
+    con = sqlite3.connect(db_path)
     cur = con.cursor()
     name = args.pop(0)
 
