@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import os
 import sqlite3
 import sys
@@ -16,7 +17,8 @@ def main():
             id             INTEGER PRIMARY KEY AUTOINCREMENT,
             title          TEXT NOT NULL UNIQUE,
             value          TEXT NOT NULL,
-            creation_date  DATETIME NOT NULL
+            creation_date  DATETIME NOT NULL,
+            last_modified  DATETIME NOT NULL
         )
     """)
 
@@ -38,8 +40,46 @@ def main():
         remember(con, cur, args)
     elif _arg == 'forget':
         forget(con, cur, args)
+    elif _arg == 'alter':
+        alter(con, cur, args)
     else:
         remind(con, args, _arg)
+
+def alter(con, cur, args):
+    if not args:
+        print("ERR: you need to provide title of reminder to alter it")
+        exit(1)
+
+    title = (" ".join(args)).strip()
+    prev = fetch(con, title)
+    prev_value = prev[0][1]
+    temp_file_path = str("/home/" + os.getlogin() + '/~temp.remind')
+
+    with open(temp_file_path, 'w+') as file:
+        file.write(prev_value)
+
+    os.system("%s %s" % (os.getenv('EDITOR'), temp_file_path))
+
+    curr_value = None
+
+    with open(temp_file_path, 'r') as file:
+        curr_value = file.read()
+
+    if not curr_value:
+        print("ERR: cannot leave empty reminder. To remove reminder use 'remind forget'")
+        os.remove(temp_file_path)
+        exit(1)
+
+    con.execute("""
+        UPDATE reminder
+        SET last_modified = (datetime('now')),
+            value = ?
+        WHERE title = ?
+    """, (curr_value.strip(), title.strip(),))
+    os.remove(temp_file_path)
+    print("Altered memory of '" + title + "'")
+    con.commit()
+
 
 def forget(con, cur, args):
     title = " ".join(args)
@@ -57,8 +97,7 @@ def fetch(con, title):
     return result.fetchall()
 
 def delete(con, title):
-    result = con.execute("DELETE FROM reminder WHERE title = ?", (title.strip(),))
-    # result.fetchall()
+    con.execute("DELETE FROM reminder WHERE title = ?", (title.strip(),))
     con.commit()
 
 
@@ -125,8 +164,8 @@ def remember(con, cur, argss):
         exit(1)
 
     cur.execute("""
-        INSERT INTO reminder (title, value, creation_date)
-        VALUES(?, ?, datetime('now'))
+        INSERT INTO reminder (title, value, creation_date, last_modified)
+        VALUES(?, ?, datetime('now'), datetime('now'))
     """, (title, value,))
     con.commit()
     print("Remembered '" + title +"', ", cur.lastrowid)
