@@ -5,6 +5,8 @@ import sqlite3
 import sys
 from itertools import takewhile
 
+VERSION = "1.0.1"
+
 def main():
     args = sys.argv
     db_path = str("/home/" + os.getlogin() + "/.reminder.db")
@@ -42,6 +44,8 @@ def main():
         forget(con, cur, args)
     elif _arg == 'alter':
         alter(con, cur, args)
+    elif _arg == 'version':
+        print("Current remind version:", VERSION)
     else:
         remind(con, args, _arg)
 
