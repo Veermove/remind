@@ -2,7 +2,7 @@
 
 
 Simple program to create reminders and access them from terminal.
-Reminders are stored in sqlite database in /home/\<user\>/.remind.db 
+Reminders are stored in sqlite database in /home/\<user\>/.remind.db
 
 To remember use:
 ```
@@ -21,5 +21,11 @@ remind forget <title>
 
 To list all notes - use:
 ```
-or: remind list [-t|--title|-d|--date]
+remind list [-t|--title|-d|--date]
 ```
+
+To alter a note - use:
+```
+remind alter <title>
+```
+Note: environment variable EDITOR must be set
