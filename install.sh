@@ -1,2 +1,3 @@
 rm /usr/bin/remind
-mv ./remind.py /usr/bin/remind
+chmod +x remind.py
+cp ./remind.py /usr/bin/remind
