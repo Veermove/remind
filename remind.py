@@ -6,8 +6,10 @@ import sys
 
 from itertools import takewhile
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 TEMP_FILE_PATH = str("/home/" + os.getlogin() + '/~temp.remind')
+
+# ALTER ======
 
 def alter(program_name, con, args):
     if not args:
@@ -43,7 +45,7 @@ def alter(program_name, con, args):
             last_modified = (datetime('now')),
             value = ?
         WHERE title = ?""",
-        (curr_value.strip(), title.strip(),))
+        (curr_value.strip() + "\n", title.strip(),))
 
     os.remove(TEMP_FILE_PATH)
     print("Altered memory of '" + title + "'")
