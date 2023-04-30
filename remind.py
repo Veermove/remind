@@ -6,7 +6,7 @@ import sys
 
 from itertools import takewhile
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 TEMP_FILE_PATH = str("/home/" + os.getlogin() + '/~temp.remind')
 
 # ALTER ======
@@ -101,11 +101,11 @@ def remember(program_name, con, cur, argss):
     t, v = None, None
 
     def take_title(args):
-        title = [s for s in takewhile(lambda x: x not in ['-v', '--value', '-sv', '--stdinvalue'])]
+        title = [s for s in takewhile(lambda x: x not in ['-v', '--value', '-sv', '--stdinvalue'], args)]
         return title, args[len(title):]
 
     def take_value(args):
-        value = [s for s in takewhile(lambda x: x not in ['-t', '--title', '-sv', '--stdinvalue'])]
+        value = [s for s in takewhile(lambda x: x not in ['-t', '--title', '-sv', '--stdinvalue'], args)]
         return value, args[len(value):]
 
     while (t is None or v is None) and len(argss) > 0:
