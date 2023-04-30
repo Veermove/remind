@@ -91,7 +91,7 @@ def p_help_forget(program_name):
 ### REMEMBER ========
 
 def remember(program_name, con, cur, argss):
-    if argss[0] == '--help':
+    if argss and argss[0] == '--help':
         p_help_remember(program_name)
 
     if len(argss) < 2:
