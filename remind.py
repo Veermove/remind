@@ -6,7 +6,7 @@ import sys
 
 from itertools import takewhile
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 TEMP_FILE_PATH = str("/home/" + os.getlogin() + '/~temp.remind')
 
 # ALTER ======
@@ -171,11 +171,27 @@ def fetch(con, title):
     return result.fetchall()
 
 def remind(con, _args, arg):
+    q = False
+    if arg == '-q':
+        q = True
+        arg = ""
+    if _args and  _args[-1] == '-q':
+        q = True
+        _args.remove('-q')
+    if arg == '--quiet':
+        q = True
+        arg = ""
+    if _args and  _args[-1] == '--quiet':
+        q = True
+        _args.remove('--quiet')
+
     result_data = fetch(con, arg + " " + " ".join(_args))
+
     if result_data:
-        header = " ".join([result_data[0][0], "|    added on", result_data[0][2]])
-        print(header)
-        print("".ljust(len(header), '-'))
+        if not q:
+            header = " ".join([result_data[0][0], "|    added on", result_data[0][2]])
+            print(header)
+            print("".ljust(len(header), '-'))
         print(result_data[0][1])
 
 def exec_list(cur, args):
