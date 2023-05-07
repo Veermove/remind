@@ -1,3 +1,2 @@
-rm /usr/bin/remind
-chmod +x remind.py
-cp ./remind.py /usr/bin/remind
+rm /home/$USER/.local/bin/remind
+ln -s "$(pwd)/remind.py" /home/$USER/.local/bin/remind
