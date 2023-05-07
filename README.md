@@ -29,3 +29,11 @@ To alter a note - use:
 remind alter <title>
 ```
 Note: environment variable EDITOR must be set
+
+
+## DEV INFO
+
+Man page entry can be recreated from src/remind_man.md with pandoc using:
+```
+pandoc -s -t man remind_man.md -o remind.1
+```
