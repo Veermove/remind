@@ -1,16 +1,21 @@
-% Remind(1) Remind user manual
-% Tymoteusz Tretowicz
-% May 7, 2023
+# Remind
+simple program for creating persistng reminders
 
-# NAME
+## INSTALLATION
 
-remind - simple reminder program
+To install clone this repository and run provided install script:
 
-# SYNOPSIS
+```
+> git clone git@github.com:Veermove/remind.git
+> cd remind
+> ./install.sh
+```
+This will create symlink to remind script in ~/.local/bin directory and copy man page to ~/.local/share/man/man1 directory.
+## SYNOPSIS
 
 remind [*command*] [*subcommand*] [*options*] [*flags*]...
 
-# DESCRIPTION
+## DESCRIPTION
 
 Remind stores notes/reminders in sqlite database created in users home directory.
 Notes or reminders consist of title, which program uses to find them later and
@@ -58,7 +63,7 @@ To edit reminder:
 
 This will open default editor with reminder value. After saving and closing editor new value will be saved.
 
-# OPTIONS
+## OPTIONS
 When reading note flag `-q` or `--quiet` will print only main text of reminder without metdata. In other cases such as forgeting or altering, when this flag is provided program will not print anything.
 
 Flag `-h` or `--help` will print contextual help message.
