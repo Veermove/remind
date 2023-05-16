@@ -27,10 +27,9 @@ def exec_remember(task, conn):
         print("---> options: %s" % " ".join(task["options"]))
         exit(1)
     elif value is None and \
-        ("-v" in positional_flags and "--value" in positional_flags):
+        ("-v" in positional_flags or "--value" in positional_flags):
 
         value = next(filter(lambda s: s[0] == "-v" or s[0] == "--value", task["positional"]))[1]
-
 
     if title is not None and \
         ("-t" in positional_flags or "--title" in positional_flags):
@@ -41,7 +40,7 @@ def exec_remember(task, conn):
         print("---> options: %s" % " ".join(task["options"]))
         exit(1)
     elif title is None and \
-        ("-t" in positional_flags and "--title" in positional_flags):
+        ("-t" in positional_flags or "--title" in positional_flags):
 
         title = next(filter(lambda s: s[0] == "-t" or s[0] == "--title", task["positional"]))[1]
 

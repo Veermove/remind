@@ -18,7 +18,7 @@ main text that ought to be remembered.
 
 Creating simple reminder:
 
-    remind remember -t Example title -v My first reminder
+    remind remember -t "Example title" -v "My first reminder"
 
 ## REMIND
 To see all reminders:
