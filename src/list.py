@@ -33,4 +33,7 @@ def exec_list(task, conn):
     for (title, date) in res_data:
         print(title.ljust(longest), end="")
         print("   ", end="")
-        print(date)
+        if "-q" not in task["flags"] and "--quiet" not in task["flags"]:
+            print(date)
+        else:
+            print()
