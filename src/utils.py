@@ -28,6 +28,10 @@ def aletr_with_editor(def_value) -> str:
     with open(TEMP_FILE_PATH, 'w+') as file:
         file.write(def_value)
 
+    if os.getenv('EDITOR') is None:
+        print("ERR: EDITOR env variable is not set")
+        exit(1)
+
     os.system("%s %s" % (os.getenv('EDITOR'), TEMP_FILE_PATH))
 
     curr_value = None
