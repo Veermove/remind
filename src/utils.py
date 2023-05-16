@@ -14,6 +14,16 @@ def fetchall(con, ordering):
 
     return result.fetchall()
 
+def fetchall_titles(con, name):
+    if name:
+        stmt = "SELECT title FROM reminder WHERE title LIKE ?"
+        result = con.execute(stmt, (name.strip() + "%",))
+    else:
+        stmt = "SELECT title FROM reminder"
+        con.execute(stmt)
+
+    return result.fetchall()
+
 def aletr_with_editor(def_value) -> str:
     with open(TEMP_FILE_PATH, 'w+') as file:
         file.write(def_value)
