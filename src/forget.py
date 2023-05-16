@@ -1,26 +1,27 @@
-from utils import fetch
+from utils import fetch, delete
 
+def exec_forget(task, conn):
+    assert task["command"] == "forget", "Unreachable, forget called without delete argument"
 
-def forget(program_name, con, args):
-    title = " ".join(args)
+    if "--help" in task["flags"]:
+        print_forget_help()
+        exit(0)
 
-    if title.startswith("--help"):
-        p_help(program_name)
+    title = task["subcommand"]
+    if task["options"]:
+        title += " " + " ".join(task["options"])
 
-    result_data = fetch(con, title)
+    result_data = fetch(conn, title)
     if not result_data:
         print("ERR: Entry with title: ", title, "does not exist.")
         exit(1)
 
-    print("Dropping", " ".join([result_data[0][0], "added on", result_data[0][2]]))
-    delete(con, title)
+    if "-q" not in task["flags"] and "--quiet" not in task["flags"]:
+        print("Dropping", " ".join([result_data[0][0], "added on", result_data[0][2]]))
+    delete(conn, title)
 
-def delete(con, title):
-    con.execute("DELETE FROM reminder WHERE title = ?", (title.strip(),))
-    con.commit()
-
-
-def p_help(program_name):
-    print("Usage: %s forget <title>" % program_name)
-    print("Immieditaly removes note from memory.")
-    exit(0)
+def print_forget_help():
+    print("Usage: forget [options] <title>")
+    print("Flags:")
+    print("  -q, --quiet    : Do not print the title of the entry being deleted")
+    print("  -h, --help     : Print this help message")

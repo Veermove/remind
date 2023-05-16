@@ -7,7 +7,8 @@
 remind - simple reminder program
 .SH SYNOPSIS
 .PP
-reminder [\f[I]command\f[R]] [\f[I]options\f[R]]\&...
+remind [\f[I]command\f[R]] [\f[I]subcommand\f[R]] [\f[I]options\f[R]]
+[\f[I]flags\f[R]]\&...
 .SH DESCRIPTION
 .PP
 Remind stores notes/reminders in sqlite database created in users home
@@ -22,9 +23,84 @@ Creating simple reminder:
 remind remember -t Example title -v My first reminder
 \f[R]
 .fi
+.SS REMIND
+.PP
+To see all reminders:
+.IP
+.nf
+\f[C]
+remind list [-st | -sd]
+\f[R]
+.fi
+.PP
+Flags \f[C]-st\f[R] and \f[C]-sd\f[R] sort reminders by title and date
+respectively.
+.PP
+To see specific reminder:
+.IP
+.nf
+\f[C]
+remind <title> [-q | --quiet]
+\f[R]
+.fi
+.SS REMEMBER
+.PP
+To create new reminder:
+.IP
+.nf
+\f[C]
+remind remember [-t | --title] <title> [-v | --value] <main text>
+\f[R]
+.fi
+.PP
+or provide value from standard input:
+.IP
+.nf
+\f[C]
+remind remember [-t | --title] <title> [-sv | --stdin-val]
+\f[R]
+.fi
+.PP
+Additioanlly before creating reminder you can edit provided value in
+default editor:
+.IP
+.nf
+\f[C]
+remind remember [-t | --title] <title> [-a | --alter]
+\f[R]
+.fi
+.SS FORGET
+.PP
+To delete reminder:
+.IP
+.nf
+\f[C]
+remind forget <title>
+\f[R]
+.fi
+.SS ALTER
+.PP
+To edit reminder:
+.IP
+.nf
+\f[C]
+remind alter <title> [-t | --title] <title>
+\f[R]
+.fi
+.PP
+This will open default editor with reminder value.
+After saving and closing editor new value will be saved.
 .SH OPTIONS
 .PP
-The remind source code and all documentation may be downloaded from
+When reading note flag \f[C]-q\f[R] or \f[C]--quiet\f[R] will print only
+main text of reminder without metdata.
+In other cases such as forgeting or altering, when this flag is provided
+program will not print anything.
+.PP
+Flag \f[C]-h\f[R] or \f[C]--help\f[R] will print contextual help
+message.
+.PP
+The remind source code and all documentation may be downloaded from:
 <https://github.com/Veermove/remind>.
 .SH AUTHORS
 Tymoteusz Tretowicz.

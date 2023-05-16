@@ -1,76 +1,96 @@
-from itertools import takewhile
+from utils import aletr_with_editor, fetch, remember
 
 
-def remember(program_name, con, cur, argss):
-    if argss and argss[0] == '--help':
-        p_help_remember(program_name)
+def exec_remember(task, conn):
+    assert task["command"] == "remember", "Unreachable, remember called without add argument"
 
-    if len(argss) < 2:
-        print("ERR: title and value are needed to insert reminder")
+    if "--help" in task["flags"]:
+        print_remember_help()
+        exit(0)
+
+    title = None
+    value = None
+    if task["subcommand"]:
+        title = task["subcommand"]
+
+    if task["options"]:
+        value = " ".join(task["options"])
+
+    positional_flags = list(map(lambda s: s[0], task["positional"]))
+
+    if value is not None and \
+        ("-v" in positional_flags or "--value" in positional_flags):
+
+        flag_val = next(filter(lambda s: s[0] == "-v" or s[0] == "--value", task["positional"]))
+        print("ERR: Conflicting value: Cannot use both flags and options for value")
+        print("---> flags: %s %s" % (flag_val[0], flag_val[1]))
+        print("---> options: %s" % " ".join(task["options"]))
+        exit(1)
+    elif value is None and \
+        ("-v" in positional_flags and "--value" in positional_flags):
+
+        value = next(filter(lambda s: s[0] == "-v" or s[0] == "--value", task["positional"]))[1]
+
+
+    if title is not None and \
+        ("-t" in positional_flags or "--title" in positional_flags):
+
+        flag_val = next(filter(lambda s: s[0] == "-t" or s[0] == "--title", task["positional"]))
+        print("ERR: Conflicting title. Cannot use both flags and options for title")
+        print("---> flags: %s %s" % (flag_val[0], flag_val[1]))
+        print("---> options: %s" % " ".join(task["options"]))
+        exit(1)
+    elif title is None and \
+        ("-t" in positional_flags and "--title" in positional_flags):
+
+        title = next(filter(lambda s: s[0] == "-t" or s[0] == "--title", task["positional"]))[1]
+
+    if value is not None and \
+        ("-sv" in task["flags"] or "--stdin-val" in task["flags"]):
+
+        print("ERR: Conflicting value. Cannot use both stdin and options for value")
+        exit(1)
+    elif value is None and \
+        ("-sv" in task["flags"] or "--stdin-val" in task["flags"]):
+
+        try:
+            v = ""
+            while True:
+                v += input()
+                v += '\n'
+        except (EOFError, KeyboardInterrupt) as _:
+            value = v
+
+    if "-a" in task["flags"] or "--alter" in task["flags"]:
+        value = aletr_with_editor(value if value is not None else "")
+
+    if title is None:
+        print("ERR: Title is required")
+        exit(1)
+    if value is None:
+        print("ERR: Value is required")
         exit(1)
 
-    t, v = None, None
-
-    def take_title(args):
-        title = [s for s in takewhile(lambda x: x not in ['-v', '--value', '-sv', '--stdinvalue'], args)]
-        return title, args[len(title):]
-
-    def take_value(args):
-        value = [s for s in takewhile(lambda x: x not in ['-t', '--title', '-sv', '--stdinvalue'], args)]
-        return value, args[len(value):]
-
-    while (t is None or v is None) and len(argss) > 0:
-        flag_0 = argss.pop(0)
-
-        if flag_0 == '-v' or flag_0 == '--value':
-            v, argss = take_value(argss)
-            v = " ".join(v)
-        elif flag_0 == '-t' or flag_0 == '--title':
-            t, argss = take_title(argss)
-            t = " ".join(t)
-        elif flag_0 == '-sv' or flag_0 == '--stdinvalue':
-            try:
-                value = ""
-                while True:
-                    value += input()
-                    value += '\n'
-            except (EOFError, KeyboardInterrupt) as _:
-                v = value
-                continue
-        else:
-            print("ERR: Unrecognized flag " + flag_0)
-            exit(1)
-
-    if t is None:
-        print("ERR: Title is missing")
-        exit(1)
-
-    if v is None:
-        print("ERR: Value is missing")
-        exit(1)
-
-    title, value = t, v
-
-    result = con.execute("SELECT title, value, creation_date FROM reminder WHERE title = ?", (title,))
-    result_data = result.fetchall()
-    if result_data:
+    prev_data = fetch(conn, title)
+    if prev_data:
         print("ERR: reminder with that title already exists.")
         exit(1)
 
-    cur.execute("""
-        INSERT INTO reminder (title, value, creation_date, last_modified)
-        VALUES(?, ?, datetime('now'), datetime('now'))
-    """, (title, value,))
-    con.commit()
-    print("Remembered '" + title +"', ", cur.lastrowid)
+    remember(conn, title, value)
+    if "-q" not in task["flags"] and "--quiet" not in task["flags"]:
+        print("Remembered '" + title +"'")
 
-def p_help_remember(program_name):
-    print("Usage: %s remember <title> <value>" % program_name)
-    print("Remembers a note.")
-    print("Title and value can be provided in any order as long as title is prefixed by:")
-    print("    --title or -t")
-    print("and value by:")
-    print("    --value or -v\n")
-    print("Additional option for providing value is with standard input. This is done via flags -sv or --stdinvalue.\n")
-    exit(0)
 
+def print_remember_help():
+    print("""
+remember - Remember note
+> remind remember <title> <value>
+
+Flags:
+    -q, --quiet         : Don't print anything
+    -a, --alter         : Open editor to alter value direvtly. If value is provided, it will be inserted in editor.
+    -sv, --stdin-val    : Read value from stdin.
+    -t, --title <title> : Title of the note
+    -v, --value <value> : Value of the note
+    -h, --help          : Print this help message
+    """)
