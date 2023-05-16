@@ -4,7 +4,7 @@ def exec_alter(task, conn):
     assert task["command"] == "alter", "Unreachable, remember called without argument"
 
     if "--help" in task["flags"]:
-        print_remember_help()
+        print_alter_help()
         exit(0)
 
     title = None
@@ -40,7 +40,8 @@ def exec_alter(task, conn):
 
 
 
-def print_remember_help():
-    print("Usage: remember [options] <title> <value>")
+def print_alter_help():
+    print("Usage: remind alter <title>")
     print("Flags:")
     print("  -h, --help     : Print this help message")
+    print("  -q, --quiet    : Do not print anything after altering memory")

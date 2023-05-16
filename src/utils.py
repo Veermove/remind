@@ -14,10 +14,10 @@ def fetchall(con, ordering):
 
     return result.fetchall()
 
-def fetchall_titles(con, name):
-    if name:
+def fetchall_titles(con, prefix):
+    if prefix:
         stmt = "SELECT title FROM reminder WHERE title LIKE ?"
-        result = con.execute(stmt, (name.strip() + "%",))
+        result = con.execute(stmt, (prefix.strip() + "%",))
     else:
         stmt = "SELECT title FROM reminder"
         con.execute(stmt)

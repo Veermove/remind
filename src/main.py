@@ -61,7 +61,7 @@ def main():
             break
 
         x = args[i]
-        if x not in POSITIONAL_FLAGS and (x.startswith("-") or x.startswith("--")):
+        if x not in POSITIONAL_FLAGS and (x.startswith("-")):
             task["flags"].append(x)
         elif x in POSITIONAL_FLAGS:
             i, task = remove_positional_flags(i, args, task)

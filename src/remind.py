@@ -45,5 +45,5 @@ def exec_remind(task, conn):
 def print_remind_help():
     print("Usage: remind [options] <name>")
     print("Flags:")
-    print("  -q, --quiet    : Do not print the title of the entry being deleted")
+    print("  -q, --quiet    : Do not print the header")
     print("  -h, --help     : Print this help message")

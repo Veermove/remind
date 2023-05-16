@@ -87,8 +87,8 @@ remember - Remember note
 > remind remember <title> <value>
 
 Flags:
-    -q, --quiet         : Don't print anything
-    -a, --alter         : Open editor to alter value direvtly. If value is provided, it will be inserted in editor.
+    -q, --quiet         : Don't print anything after remembering
+    -a, --alter         : Open editor to alter value directly. If value is provided, it will be inserted into editor.
     -sv, --stdin-val    : Read value from stdin.
     -t, --title <title> : Title of the note
     -v, --value <value> : Value of the note
