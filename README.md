@@ -23,7 +23,7 @@ main text that ought to be remembered.
 
 Creating simple reminder:
 
-    remind remember -t Example title -v My first reminder
+    remind remember -t "Example title" -v "My first reminder"
 
 ## REMIND
 To see all reminders:
@@ -59,7 +59,7 @@ To delete reminder:
 
 To edit reminder:
 
-    remind alter <title> [-t | --title] <title>
+    remind alter <title>
 
 This will open default editor with reminder value. After saving and closing editor new value will be saved.
 

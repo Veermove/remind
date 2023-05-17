@@ -54,7 +54,7 @@ remind forget <title>
 
 To edit reminder:
 ```
-remind alter <title> [-t | --title] <title>
+remind alter <title>
 ```
 This will open default editor with reminder value. After saving and closing editor new value will be saved.
 
