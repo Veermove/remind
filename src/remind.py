@@ -2,7 +2,6 @@ from utils import fetch, fetchall_titles
 
 
 def exec_remind(task, conn):
-    print(task)
 
     name = " ".join(task.arguments)
 

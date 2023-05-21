@@ -87,8 +87,6 @@ def main():
 
     args = mgp.parse_args(subargs)
 
-    print(args)
-
     if args.command == "list":
         exec_list(args, con)
     elif args.command == "alter":
