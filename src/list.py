@@ -4,9 +4,9 @@ from utils import fetchall
 #TODO: [-f <filter>] [-l <limit>] [-o <offset>]
 def exec_list(task, conn):
     order = ""
-    if task.title:
+    if 'title' in task and task.title:
         order += " ORDER BY title ASC"
-    elif task.date:
+    elif 'date' in task and task.date:
         order += " ORDER BY creation_date ASC"
 
     res_data = fetchall(conn, order)

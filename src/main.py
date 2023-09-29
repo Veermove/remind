@@ -50,6 +50,25 @@ def main():
 
     args, rest = parser.parse_known_args()
 
+    if not args.arguments:
+        exec_list(args, con)
+        exit(0)
+
+
+# TODO https://stackoverflow.com/questions/5637124/tab-completion-in-pythons-raw-input
+#     import readline
+
+# def completer(text, state):
+#     options = [i for i in commands if i.startswith(text)]
+#     if state < len(options):
+#         return options[state]
+#     else:
+#         return None
+
+# readline.parse_and_bind("tab: complete")
+# readline.set_completer(completer)
+
+
     if args.arguments[0] not in COMMANDS:
         exec_remind(args, con)
 
